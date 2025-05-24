@@ -39,9 +39,35 @@
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",
     "typescript": "~5.7.2",
-    "typescript-eslint": "^8.19.0"
+    "typescript-eslint": "^8.19.0",
+    "clasp": "1.0.0"
   },
-  "nx": {},
+  "nx": {
+    "targets": {
+      "login": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "npx clasp login"
+        }
+      },
+      "create-dist": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "node scripts/create-folder.js dist/gas"
+        }
+      },
+      "clone": {
+        "executor": "nx:run-commands",
+        "dependsOn": [
+          "create-dist"
+        ],
+        "options": {
+          "command": "npx clasp clone \"12RfdDUWeoOqWPHsojipILxWXExtSgUG0Xp15o894znagB2WKN9Kvk24B\"",
+          "cwd": "dist/gas"
+        }
+      }
+    }
+  },
   "dependencies": {
     "@angular/common": "~19.2.0",
     "@angular/compiler": "~19.2.0",
