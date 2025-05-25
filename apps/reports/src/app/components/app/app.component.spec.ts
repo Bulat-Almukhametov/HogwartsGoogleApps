@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AppComponent } from '../app.component';
+import { AppComponent } from './app.component';
 import { RouterModule } from '@angular/router';
 
 describe('AppComponent', () => {
@@ -11,8 +11,8 @@ describe('AppComponent', () => {
       imports: [AppComponent, RouterModule.forRoot([])],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AppComponent)
-    component = fixture.componentInstance
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
   });
 
   it(`should be created'`, () => {
