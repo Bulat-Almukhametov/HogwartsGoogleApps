@@ -65,6 +65,29 @@
           "command": "npx clasp clone \"12RfdDUWeoOqWPHsojipILxWXExtSgUG0Xp15o894znagB2WKN9Kvk24B\"",
           "cwd": "dist/gas"
         }
+      },
+      "pull": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "npx clasp pull",
+          "cwd": "dist/gas"
+        }
+      },
+      "push": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "npx clasp push",
+          "cwd": "dist/gas"
+        }
+      },
+      "copy-report-app": {
+        "dependsOn": [
+          "pull"
+        ],
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "node scripts/angular-resources-to-gas.js dist/apps/reports dist/gas/report-app"
+        }
       }
     }
   },
