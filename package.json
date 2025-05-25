@@ -43,50 +43,46 @@
     "clasp": "1.0.0"
   },
   "nx": {
+    "name": "google-apps-script",
+    "implicitDependencies": [
+      "reports"
+    ],
     "targets": {
-      "login": {
+      "clasp": {
         "executor": "nx:run-commands",
         "options": {
-          "command": "npx clasp login"
+          "command": "echo \"This is not runnable.\""
+        },
+        "configurations": {
+          "login": {
+            "command": "npx clasp login"
+          },
+          "clone": {
+            "command": "node scripts/create-folder.js dist/gas && cd dist/gas && npx clasp clone \"12RfdDUWeoOqWPHsojipILxWXExtSgUG0Xp15o894znagB2WKN9Kvk24B\""
+          },
+          "pull": {
+            "command": "npx clasp pull",
+            "cwd": "dist/gas"
+          },
+          "push": {
+            "command": "npx clasp push",
+            "cwd": "dist/gas"
+          }
         }
       },
-      "create-dist": {
+      "copy-scripts": {
         "executor": "nx:run-commands",
         "options": {
-          "command": "node scripts/create-folder.js dist/gas"
-        }
-      },
-      "clone": {
-        "executor": "nx:run-commands",
+          "command": "echo \"This is not runnable.\""
+        },
         "dependsOn": [
-          "create-dist"
+          "pull",
+          "^build"
         ],
-        "options": {
-          "command": "npx clasp clone \"12RfdDUWeoOqWPHsojipILxWXExtSgUG0Xp15o894znagB2WKN9Kvk24B\"",
-          "cwd": "dist/gas"
-        }
-      },
-      "pull": {
-        "executor": "nx:run-commands",
-        "options": {
-          "command": "npx clasp pull",
-          "cwd": "dist/gas"
-        }
-      },
-      "push": {
-        "executor": "nx:run-commands",
-        "options": {
-          "command": "npx clasp push",
-          "cwd": "dist/gas"
-        }
-      },
-      "copy-report-app": {
-        "dependsOn": [
-          "pull"
-        ],
-        "executor": "nx:run-commands",
-        "options": {
-          "command": "node scripts/angular-resources-to-gas.js dist/apps/reports dist/gas/report-app"
+        "configurations": {
+          "report-app": {
+            "command": "node scripts/angular-resources-to-gas.js dist/apps/reports dist/gas/report-app"
+          }
         }
       }
     }
