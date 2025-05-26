@@ -13,6 +13,7 @@
     "@angular/cli": "~19.2.0",
     "@angular/compiler-cli": "~19.2.0",
     "@angular/language-service": "~19.2.0",
+    "@dotenvx/dotenvx": "^1.44.1",
     "@eslint/js": "^9.8.0",
     "@nx/angular": "^21.0.3",
     "@nx/eslint": "21.0.3",
@@ -28,6 +29,7 @@
     "@types/node": "18.16.9",
     "@typescript-eslint/utils": "^8.19.0",
     "angular-eslint": "^19.2.0",
+    "clasp": "1.0.0",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
     "jest": "^29.7.0",
@@ -39,8 +41,7 @@
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",
     "typescript": "~5.7.2",
-    "typescript-eslint": "^8.19.0",
-    "clasp": "1.0.0"
+    "typescript-eslint": "^8.19.0"
   },
   "nx": {
     "name": "google-apps-script",
@@ -58,7 +59,7 @@
             "command": "npx clasp login"
           },
           "clone": {
-            "command": "node scripts/create-folder.js dist/gas && cd dist/gas && npx clasp clone \"12RfdDUWeoOqWPHsojipILxWXExtSgUG0Xp15o894znagB2WKN9Kvk24B\""
+            "command": "node deploy-scripts/create-folder.js dist/gas && cd dist/gas && npx clasp clone $(npx @dotenvx/dotenvx get GOOGLE_SCRIPT_PROJECT_ID)"
           },
           "pull": {
             "command": "npx clasp pull",
@@ -81,7 +82,7 @@
         ],
         "configurations": {
           "report-app": {
-            "command": "node scripts/angular-resources-to-gas.js dist/apps/reports dist/gas/report-app"
+            "command": "node deploy-scripts/angular-resources-to-gas.js dist/apps/reports dist/gas/report-app"
           }
         }
       }
