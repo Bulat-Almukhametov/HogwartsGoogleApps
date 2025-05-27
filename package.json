@@ -53,7 +53,7 @@
       "clasp": {
         "executor": "nx:run-commands",
         "options": {
-          "command": "echo \"This is not runnable.\""
+          "command": "echo \"Please specify a configuration: login | clone | pull | push.\""
         },
         "configurations": {
           "login": {
@@ -75,7 +75,7 @@
       "copy-scripts": {
         "executor": "nx:run-commands",
         "options": {
-          "command": "echo \"This is not runnable.\""
+          "command": "echo \"Please specify a configuration: report-app.\""
         },
         "dependsOn": [
           "pull",
