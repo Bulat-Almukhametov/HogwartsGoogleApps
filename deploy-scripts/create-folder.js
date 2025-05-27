@@ -17,7 +17,7 @@ try {
       `Folder "${folderToManage}" already exists at "${folderPath}". Removing older one...`
     );
     fs.rmSync(folderPath, { recursive: true, force: true });
-    console.log(`Successfully removed older folder "\${folderToManage}".`);
+    console.log(`Successfully removed older folder "${folderToManage}".`);
   }
 
   fs.mkdirSync(folderPath);
