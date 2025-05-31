@@ -1,0 +1,36 @@
+name: Before Merge
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [24.x]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create .env file
+        run: echo "GOOGLE_SCRIPT_PROJECT_ID=${{ secrets.GOOGLE_SCRIPT_PROJECT_ID }}" > .env
+
+      - name: Clone Google Apps Script project
+        run: npx nx run google-apps-script:clasp --configuration=clone
+
+      - name: Build root project
+        run: npx nx run google-apps-script:build --verbose
+
+      - name: Push changes to Google Apps Script
+        run: npx nx run google-apps-script:clasp --configuration=push

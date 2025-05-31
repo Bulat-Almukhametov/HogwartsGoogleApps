@@ -52,9 +52,7 @@
     "targets": {
       "clasp": {
         "executor": "nx:run-commands",
-        "options": {
-          "command": "echo \"Please specify a configuration: login | clone | pull | push.\""
-        },
+        "defaultConfiguration": "pull",
         "configurations": {
           "login": {
             "command": "npx clasp login"
@@ -72,14 +70,14 @@
           }
         }
       },
-      "copy-scripts": {
+      "build": {
         "executor": "nx:run-commands",
         "options": {
-          "command": "echo \"Please specify a configuration: report-app.\""
+          "command": "npx nx run google-apps-script:build --configuration=report-app"
         },
         "dependsOn": [
-          "pull",
-          "^build"
+          "^build",
+          "clasp"
         ],
         "configurations": {
           "report-app": {
