@@ -20,7 +20,7 @@ try {
     console.log(`Successfully removed older folder "${folderToManage}".`);
   }
 
-  fs.mkdirSync(folderPath);
+  fs.mkdirSync(folderPath, { recursive: true });
   console.log(
     `Successfully created new folder "${folderToManage}" at "${folderPath}".`
   );
