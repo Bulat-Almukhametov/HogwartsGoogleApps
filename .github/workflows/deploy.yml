@@ -32,6 +32,8 @@ jobs:
         env:
           CLASPRC_JSON_SECRET: ${{ secrets.CLASPRC_JSON }}
 
+      # update .clasprc.json file with new access token
+
       - name: Save current .clasprc.json contents to CLASPRC_JSON_FILE environment variable
         id: save-clasprc
         run: |
