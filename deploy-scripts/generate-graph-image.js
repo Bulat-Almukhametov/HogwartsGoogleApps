@@ -2,99 +2,123 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 const { exit } = require('process');
+const { execSync } = require('child_process');
 
-const fileName = process.argv[2];
-const queryParams = process.argv[3];
-
-if (!fileName) {
-  console.error('Please provide a file name as the first argument.');
-}
-
-if (!queryParams) {
-  console.error('Please provide query parameters as the second argument.');
-}
-
-if (!fileName || !queryParams) {
-  console.error('Usage: node generate-graph-image.js <fileName> <queryParams>');
-  exit(1);
-}
+const { fileName, queryParams } = readConsoleArguments();
 
 generateNxGraphImage();
 
-async function generateNxGraphImage() {
-  const outputPath = `docs/images/${fileName}`; // Where you want to save the image
-  const htmlPath = 'dist/generated-graph/index.html'; // Path to your generated Nx graph HTML
+/*
+ * Declarations of the functions used in this script
+ */
 
-  // Ensure the output directory exists
+function readConsoleArguments() {
+  const fileName = process.argv[2];
+  const queryParams = process.argv[3];
+
+  if (!fileName) {
+    console.error('Please provide a file name as the first argument.');
+  }
+
+  if (!queryParams) {
+    console.error('Please provide query parameters as the second argument.');
+  }
+
+  if (!fileName || !queryParams) {
+    console.error(
+      'Usage: node generate-graph-image.js <fileName> <queryParams>'
+    );
+    exit(1);
+  }
+  return { fileName, queryParams };
+}
+
+async function generateNxGraphImage() {
+  const outputPath = `docs/images/${fileName}`;
+  const htmlPath = 'dist/generated-graph/index.html';
+
+  checkOutputPathExists(outputPath);
+
+  let releaseCallback;
+  try {
+    generateGraphHtml(htmlPath);
+
+    const { page, browser } = await initBrowser();
+    releaseCallback = () => browser.close();
+
+    await openHtmlFile(htmlPath, page);
+
+    await hideButtons(page);
+
+    await takeAPictureOfGraph(page, outputPath);
+  } catch (error) {
+    console.error('Error generating Nx graph image:', error);
+    process.exit(1);
+  } finally {
+    await releaseCallback?.call();
+  }
+}
+
+async function hideButtons(page) {
+  await hideElement(page, '[data-cy="downloadImageButton"]');
+  await hideElement(page, '[data-cy="resetLayoutButton"]');
+}
+
+async function hideElement(page, selector) {
+  const hideElement = await getPageElement(page, selector);
+  await hideElement.evaluate((element) => (element.style.display = 'none'));
+}
+
+async function takeAPictureOfGraph(page, outputPath) {
+  const graphImage = await getPageElement(page, '#cytoscape-graph');
+
+  console.log('Taking screenshot of the graph element...');
+  await graphImage.screenshot({
+    path: outputPath,
+    type: 'png',
+    fullPage: false,
+    omitBackground: true,
+  });
+  console.log(`Graph image saved to ${outputPath}`);
+}
+
+async function getPageElement(page, graphContainerSelector) {
+  const graphElement = await page.waitForSelector(graphContainerSelector, {
+    visible: true,
+    timeout: 10000,
+  });
+  return graphElement;
+}
+
+async function openHtmlFile(htmlPath, page) {
+  const fileUrl = `file://${path.resolve(htmlPath)}#/${queryParams}`;
+  console.log(`Navigating to ${fileUrl}`);
+  await page.goto(fileUrl, {
+    waitUntil: 'networkidle0',
+    timeout: 3000,
+  });
+}
+
+async function initBrowser() {
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
+  const page = await browser.newPage();
+
+  await page.setViewport({ width: 1920, height: 1080 });
+  return { page, browser };
+}
+
+function generateGraphHtml(htmlPath) {
+  console.log('Generating Nx graph HTML...');
+  execSync(`npx nx graph --file=${htmlPath}`, { stdio: 'inherit' });
+  console.log('Nx graph HTML generated.');
+}
+
+function checkOutputPathExists(outputPath) {
   const outputDir = path.dirname(outputPath);
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
-  }
-
-  let browser;
-  try {
-    // 1. Generate the Nx graph HTML first (Nx CLI command)
-    console.log('Generating Nx graph HTML...');
-    const { execSync } = require('child_process');
-    execSync(`npx nx graph --file=${htmlPath}`, { stdio: 'inherit' });
-    console.log('Nx graph HTML generated.');
-
-    // 2. Launch a headless Chromium browser
-    browser = await puppeteer.launch({
-      headless: true, // Run in headless mode (no visible browser window)
-      args: ['--no-sandbox', '--disable-setuid-sandbox'], // Recommended for CI environments
-    });
-    const page = await browser.newPage();
-
-    // Set a suitable viewport size for the screenshot
-    await page.setViewport({ width: 1920, height: 1080 }); // Adjust as needed
-
-    // 3. Open the generated Nx graph HTML file
-    const fileUrl = `file://${path.resolve(htmlPath)}#/${queryParams}`;
-    console.log(`Navigating to ${fileUrl}`);
-    await page.goto(fileUrl, {
-      waitUntil: 'networkidle0', // Wait until network is idle
-      timeout: 60000, // Increase timeout for potentially large graphs
-    });
-
-    const downloadButtonSelector = '[data-cy="downloadImageButton"]'; // **CHECK THIS SELECTOR IN YOUR GRAPH.HTML**
-    console.log(`Waiting for download button: ${downloadButtonSelector}`);
-    const downloadButton = await page.waitForSelector(downloadButtonSelector, {
-      visible: true,
-      timeout: 10000,
-    });
-
-    if (downloadButton) {
-      console.log('Download button found');
-      const graphContainerSelector = '[data-id="layer0-selectbox"]'; // Or a more specific selector like '.graph-container'
-      const graphElement = await page.waitForSelector(graphContainerSelector, {
-        visible: true,
-        timeout: 10000,
-      });
-
-      if (graphElement) {
-        console.log('Taking screenshot of the graph element...');
-        await graphElement.screenshot({
-          path: outputPath,
-          type: 'png',
-          fullPage: false, // Don't take a screenshot of the entire page, just the element
-          omitBackground: true, // To potentially get a transparent background if supported by the graph
-        });
-        console.log(`Graph image saved to ${outputPath}`);
-      } else {
-        console.error('Could not find the main graph element to screenshot.');
-        throw new Error('Graph element not found.');
-      }
-    } else {
-      console.error('Download button not found. Please check the selector.');
-      throw new Error('Download button not found.');
-    }
-  } catch (error) {
-    console.error('Error generating Nx graph image:', error);
-    process.exit(1); // Exit with an error code
-  } finally {
-    if (browser) {
-      await browser.close();
-    }
   }
 }
