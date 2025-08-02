@@ -1,6 +1,6 @@
 # 🧙‍♂️ Hogwarts Google Apps
 
-A magical journey into **Google Apps Script**, **CI/CD best practices**, and **modern web development**—all wrapped in a monorepo built to serve the administrative needs of the wizarding world. 🪄✨
+A magical journey into **Google Apps Script**, **CI/CD best practices**, and **modern web development**—all wrapped in a monorepo built to serve the administrative needs of the wizarding world.
 
 ## 📝 What is Hogwarts Google Apps?
 
@@ -10,7 +10,7 @@ A magical journey into **Google Apps Script**, **CI/CD best practices**, and **m
 - ✅ **Unit testing** for both frontend and backend
 - ✅ **Monorepo architecture** to keep frontend (Angular) and backend (Apps Script) cleanly separated
 
-All of this is implemented under the whimsical use case of **Hogwarts School of Witchcraft and Wizardry**—because even wizards need better document management! 📚🪶
+All of this is implemented under the whimsical use case of **Hogwarts School of Witchcraft and Wizardry** — a bit of Muggle tech might just be the trick to keep Hogwarts organized! 📚
 
 ---
 
@@ -33,46 +33,20 @@ All of this is implemented under the whimsical use case of **Hogwarts School of 
 
 ---
 
-## 🧾 Why Would Hogwarts Need This?
-
-Despite centuries of magic, the Hogwarts administration has struggled with:
-
-- 📄 Disorganized student records floating around in parchment
-- 🧾 Inconsistent class schedules and owl-based memos
-- 📁 Manual filing of magical creatures registration and potions incidents
-
-With **Google Apps Script**, Hogwarts can:
-
-- Automate document creation for spell assignments and grade reports
-- Organize student data in dynamic Google Sheets dashboards
-- Streamline communication using Gmail scripts and templated documents
-- Offer a self-service web portal for professors and prefects
-
-A bit of Muggle tech might just be the trick to keep Hogwarts organized!
-
----
-
 ## 🧪 Tech Stack
 
-| Layer    | Tech                        |
-| -------- | --------------------------- |
-| Frontend | Angular                     |
-| Backend  | Google Apps Script          |
-| CI/CD    | GitHub Actions (or similar) |
-| Testing  | Jest, clasp-gas-unit        |
-| Monorepo | Nx or custom structure      |
+| Layer    | Tech                 |
+| -------- | -------------------- |
+| Frontend | Angular              |
+| Backend  | Google Apps Script   |
+| CI/CD    | GitHub Actions       |
+| Testing  | Jest, clasp-gas-unit |
+| Monorepo | Nx                   |
 
----
+Related docs:
 
-## Projects structure
-
-Project dependencies:
-
-<img src="docs/images/projects-dependencies-graph.png" alt="Project dependencies Diagram" width="500"/>
-
-Build process:
-
-<img src="docs/images/build-process-graph.png" alt="Build process Diagram" width="500"/>
+- [Projects](./docs/projects.md)
+- [Deployment](./docs/deployment.md)
 
 ## 🧹 Contributing
 
