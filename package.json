@@ -59,7 +59,7 @@
             "command": "npx clasp login"
           },
           "clone": {
-            "command": "node deploy-scripts/create-folder.js dist/gas && cd dist/gas && npx @dotenvx/dotenvx run -f ../../.env -- cross-env-shell \"clasp clone $GOOGLE_SCRIPT_PROJECT_ID\""
+            "command": "node deploy-scripts/create-folder.js dist/gas && cd dist/gas && npx @dotenvx/dotenvx run -f ../../.env --ignore=MISSING_ENV_FILE -- cross-env-shell \"clasp clone $GOOGLE_SCRIPT_PROJECT_ID\""
           },
           "pull": {
             "command": "npx clasp pull",
