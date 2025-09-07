@@ -18,14 +18,6 @@ jobs:
           node-version-file: 'package.json'
           cache: 'npm'
 
-      - name: Cache npm dependencies #TODO: Is this needed with setup-node cache?
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-
       - name: Install dependencies
         run: npm ci
 
