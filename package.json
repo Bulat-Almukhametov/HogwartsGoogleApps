@@ -2,10 +2,13 @@
   "name": "hogwarts-google-apps",
   "version": "1.0.0",
   "description": "My learning project for Google Apps Script",
-  "scripts": {},
   "author": "Bulat Almukhametov",
   "license": "MIT",
   "private": true,
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {},
   "devDependencies": {
     "@angular-devkit/build-angular": "~19.2.0",
     "@angular-devkit/core": "~19.2.0",

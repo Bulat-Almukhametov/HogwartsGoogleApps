@@ -4,9 +4,6 @@ on:
   pull_request:
     branches: ['main']
 
-env:
-  NODE_VERSION: '24.x'
-
 jobs:
   verification:
     runs-on: ubuntu-latest
@@ -17,10 +14,10 @@ jobs:
         with:
           fetch-depth: 0 # To compare this branch with the main branch and determine affected projects
 
-      - name: Use Node.js ${{ env.NODE_VERSION }}
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: 'package.json'
           cache: 'npm'
 
       - name: Cache npm dependencies #TODO: Is this needed with setup-node cache?

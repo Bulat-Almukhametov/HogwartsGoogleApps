@@ -4,9 +4,6 @@ on:
   push:
     branches: ['main']
 
-env:
-  NODE_VERSION: '24.x'
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -15,10 +12,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ env.NODE_VERSION }}
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: 'package.json'
           cache: 'npm'
 
       - name: Cache npm dependencies #TODO: Is this needed with setup-node cache?
