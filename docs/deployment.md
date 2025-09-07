@@ -34,11 +34,18 @@ There are the steps bellow in the both pipelines.
 - **Using Node.js:** Installs Node.js of specific version to build project and use CI/CD tools.
 
 ```yaml
-- name: Use Node.js ${{ env.NODE_VERSION }}
+- name: Use Node.js
   uses: actions/setup-node@v4
   with:
-    node-version: ${{ env.NODE_VERSION }}
+    node-version-file: 'package.json'
     cache: 'npm'
+```
+
+- **Install dependencies:** Install Node.js libraries and tools using in project.
+
+```yaml
+- name: Install dependencies
+  run: npm ci
 ```
 
 - **_.env_ file:** Saves GitHub repository secrets to _.env_ file. _.env_ file is used for consistency of CI/CD with developer environments. Developer's values are stored in _.env_ file and are not pushed to the git repository.
@@ -78,13 +85,24 @@ This workflow runs when a pull request is opened or updated. If any step fails, 
     fetch-depth: 0 # To compare this branch with the main branch and determine affected projects
 ```
 
-TODO: add other tasks.
+- **Build:** Builds only projects that contain changed code to verify syntax correctness and type safety.
 
-- **:**
-
-```yaml
+````yaml
 - name: Build
   run: npx nx affected --target=build --base=origin/main --head=HEAD
+
+- **Lint:** Lints only projects that contain changed code to verify code style issues and projects dependency loop (from _NX_ tool).
+
+```yaml
+- name: Lint
+  run: npx nx affected --target=lint --base=origin/main --head=HEAD
+````
+
+- **Test:** Runs tests only for projects that contain changed code to verify that expected behaviour is not broken.
+
+```yaml
+- name: Test
+  run: npx nx affected --target=test --base=origin/main --head=HEAD
 ```
 
 #### Deployment workflow ([`deploy.yml`](../.github/workflows/deploy.yml)`)
