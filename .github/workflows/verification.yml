@@ -23,7 +23,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: Cache npm dependencies
+      - name: Cache npm dependencies #TODO: Is this needed with setup-node cache?
         uses: actions/cache@v4
         with:
           path: ~/.npm
