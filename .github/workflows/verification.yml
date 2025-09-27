@@ -42,3 +42,6 @@ jobs:
 
       - name: Test
         run: npx nx affected --target=test --base=origin/main --head=HEAD
+
+  # TODO: Add a step to generate dependency graph and upload it as an artifact or comment it to the repository
+  # check that graph was changed before commiting

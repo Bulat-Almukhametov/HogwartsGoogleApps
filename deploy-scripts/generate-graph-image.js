@@ -3,6 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const { exit } = require('process');
 const { execSync } = require('child_process');
+const { ExifTool } = require('exiftool-vendored');
+
+const DESCRIPTION_IMAGE_ATTRIBUTE = 'XMP-dc:Description';
 
 const { fileName, queryParams } = readConsoleArguments();
 
@@ -34,15 +37,30 @@ function readConsoleArguments() {
 }
 
 async function generateNxGraphImage() {
-  const outputPath = `docs/images/${fileName}`;
-  const htmlPath = 'dist/generated-graph/index.html';
+  const imagePath = `docs/images/${fileName}`;
+  const tempDir = 'dist/generated-graph';
+  const htmlPath = `${tempDir}/index.html`;
+  const graphPath = `${tempDir}/graph.json`;
 
-  checkOutputPathExists(outputPath);
+  checkDirectoryForImage(imagePath);
 
+  const checksum = generateGraph(graphPath);
+  const imageDescription = await readDescriptionFromImageMetadata(imagePath);
+
+  const newImageDescription = `The image represents the Nx graph with checksum: ${checksum}`;
+  if (newImageDescription === imageDescription) {
+    console.log('Graph image is up to date. No need to regenerate the image.');
+    return;
+  }
+
+  generateHtml(htmlPath);
+  await convertHtmlToPng(htmlPath, imagePath);
+  await writeDescriptionToImageMetadata(newImageDescription, imagePath);
+}
+
+async function convertHtmlToPng(htmlPath, outputPath) {
   let releaseCallback;
   try {
-    generateGraphHtml(htmlPath);
-
     const { page, browser } = await initBrowser();
     releaseCallback = () => browser.close();
 
@@ -110,13 +128,52 @@ async function initBrowser() {
   return { page, browser };
 }
 
-function generateGraphHtml(htmlPath) {
-  console.log('Generating Nx graph HTML...');
+function generateHtml(htmlPath) {
+  console.log('Generating HTML...');
   execSync(`npx nx graph --file=${htmlPath}`, { stdio: 'inherit' });
-  console.log('Nx graph HTML generated.');
+  console.log('HTML generated.');
 }
 
-function checkOutputPathExists(outputPath) {
+function generateGraph(graphPath) {
+  console.log('Generating Nx graph...');
+  execSync(`npx nx graph --file=${graphPath}`, { stdio: 'inherit' });
+  console.log('Nx graph generated.');
+
+  const checksum = execSync(`git hash-object ${graphPath}`, {
+    encoding: 'utf8',
+  }).trim();
+  console.log('Nx graph checksum:', checksum);
+
+  return checksum;
+}
+
+async function readDescriptionFromImageMetadata(imagePath) {
+  if (!fs.existsSync(imagePath)) {
+    return null;
+  }
+
+  const exiftool = new ExifTool();
+  const metadata = await exiftool.read(imagePath, { readArgs: ['-a', '-G1'] });
+  const description = metadata[DESCRIPTION_IMAGE_ATTRIBUTE];
+  console.log(`Description from previous image: "${description}"`);
+  await exiftool.end();
+
+  return description;
+}
+
+async function writeDescriptionToImageMetadata(checksum, imagePath) {
+  const exiftool = new ExifTool();
+  const data = {};
+  data[DESCRIPTION_IMAGE_ATTRIBUTE] = checksum;
+
+  await exiftool.write(imagePath, data, {
+    writeArgs: ['-overwrite_original', imagePath],
+  });
+  await exiftool.end();
+  console.log('Description was written to image metadata.');
+}
+
+function checkDirectoryForImage(outputPath) {
   const outputDir = path.dirname(outputPath);
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
