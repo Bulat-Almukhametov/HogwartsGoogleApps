@@ -42,25 +42,25 @@ Fill in each question under the appropriate section.
    Notes: see `nx.json` implicitDependencies.
 
 6. Question: Are there runtime constraints for the Apps Script (e.g., Apps Script runtime version, memory/time limits) that impact how the Angular app is built or what features are allowed?
-   Answer:
-   Notes:
+   Answer: Angular apps are just static files (html/js) for the Apps Script. They're building and deploying during CI/CD. Google Apps Scripts project just has corresponding files where the output from angular app build will be copied to.
+   Notes: `deploy-scripts/angular-resources-to-gas.js` script copies an output from angular apps build to corresponding files in temporary folder. This temporary folder has uploaded from Google Apps Script project files. Then the modifed files will be uploaded back to Google.
 
 7. Question: Is there any server-side component besides Google Apps Script (e.g., cloud functions, backend APIs)?
-   Answer:
+   Answer: No.
    Notes:
 
 **Development Setup**
 
 8. Question: Which package manager should contributors use (npm, pnpm, yarn)? Any workspace preference?
-   Answer:
+   Answer: npm.
    Notes:
 
 9. Question: Is there a required Node.js version and global tools (e.g., `clasp`) that contributors should install? Provide exact versions if required.
-   Answer:
-   Notes:
+   Answer: 24.x
+   Notes: The node version can be get from workflow project. In the future it'll be specified in `package.json` file.
 
 10. Question: Is there a `.env` (or secrets) file expected for local development? If yes, where is it stored and which variables are required? (For example: `GOOGLE_SCRIPT_PROJECT_ID`, credentials)
-    Answer:
+    Answer: There is only one `.env` file which is not commiting to git. It's located in the root directory.
     Notes: `package.json` references `.env` via `@dotenvx/dotenvx`.
 
 11. Question: Are there any special local setup steps beyond `npm install`/`nx` commands? (e.g., `npx clasp login`, service account setup)
